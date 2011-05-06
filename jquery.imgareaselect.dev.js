@@ -108,6 +108,9 @@ $.imgAreaSelect = function (img, options) {
         /* Selection area constraints */
         minWidth, minHeight, maxWidth, maxHeight,
         
+        /* Scaled selection area constraints */
+        minImgWidth, minImgHeight, maxImgWidth, maxImgHeight,
+        
         /* Aspect ratio to maintain (floating point number) */
         aspectRatio,
         
@@ -284,6 +287,12 @@ $.imgAreaSelect = function (img, options) {
         minHeight = options.minHeight || 0;
         maxWidth = min(options.maxWidth || 1<<24, imgWidth);
         maxHeight = min(options.maxHeight || 1<<24, imgHeight);
+        
+        /* Set minimum and maximum scaled selection area dimensions */
+        minImgWidth = options.minImgWidth || 0;
+        minImgHeight = options.minImgHeight || 0;
+        maxImgWidth = min(options.maxImgWidth || 1<<24, options.imageWidth);
+        maxImgHeight = min(options.maxImgHeight || 1<<24, options.imageHeight);
         
         /*
          * Workaround for jQuery 1.3.2 incorrect offset calculation, originally
@@ -596,6 +605,32 @@ $.imgAreaSelect = function (img, options) {
                 y1 = top + imgHeight - minHeight;
         }
 
+        var sx1 = round(x1 * scaleX),
+            sx2 = round(x2 * scaleX);
+
+        if (abs(sx2 - sx1) < minImgWidth) {
+            /* Scaled selection width is smaller than minImgWidth */
+            x2 = x1 - round(minImgWidth / scaleX) * (sx2 < sx1 || -1);
+
+            if (x2 < left)
+                x1 = left + round(minImgWidth / scaleX);
+            else if (x2 > left + imgWidth)
+                x1 = left + imgWidth - round(minImgWidth / scaleX);
+        }
+
+        var sy1 = round(y1 * scaleY),
+            sy2 = round(y2 * scaleY);
+
+        if (abs(sy2 - sy1) < minImgHeight) {
+            /* Scaled selection height is smaller than minImgHeight */
+            y2 = y1 - round(minImgHeight / scaleY) * (sy2 < sy1 || -1);
+
+            if (y2 < top)
+                y1 = top + round(minImgHeight / scaleY);
+            else if (y2 > top + imgHeight)
+                y1 = top + imgHeight - round(minImgHeight / scaleY);
+        }
+
         x2 = max(left, min(x2, left + imgWidth));
         y2 = max(top, min(y2, top + imgHeight));
         
@@ -610,6 +645,24 @@ $.imgAreaSelect = function (img, options) {
         if (abs(y2 - y1) > maxHeight) {
             /* Selection height is greater than maxHeight */
             y2 = y1 - maxHeight * (y2 < y1 || -1);
+            fixAspectRatio(true);
+        }
+
+        sx1 = round(x1 * scaleX);
+        sx2 = round(x2 * scaleX);
+
+        if (abs(sx2 - sx1) > maxImgWidth) {
+            /* Scaled selection width is greater than maxImgWidth */
+            x2 = x1 - round(maxImgWidth / scaleX) * (x2 < x1 || -1);
+            fixAspectRatio();
+        }
+
+        sy1 = round(y1 * scaleY);
+        sy2 = round(y2 * scaleY);
+
+        if (abs(sy2 - sy1) > maxImgHeight) {
+            /* Scaled selection height is greater than maxImgHeight */
+            y2 = y1 - round(maxImgHeight / scaleY) * (y2 < y1 || -1);
             fixAspectRatio(true);
         }
 
