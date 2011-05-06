@@ -108,7 +108,7 @@ $.imgAreaSelect = function (img, options) {
         /* Selection area constraints */
         minWidth, minHeight, maxWidth, maxHeight,
         
-        /* Scaled selection area constraints */
+        /* Selected image area constraints */
         minImgWidth, minImgHeight, maxImgWidth, maxImgHeight,
         
         /* Aspect ratio to maintain (floating point number) */
@@ -288,7 +288,7 @@ $.imgAreaSelect = function (img, options) {
         maxWidth = min(options.maxWidth || 1<<24, imgWidth);
         maxHeight = min(options.maxHeight || 1<<24, imgHeight);
         
-        /* Set minimum and maximum scaled selection area dimensions */
+        /* Set minimum and maximum selected image dimensions */
         minImgWidth = options.minImgWidth || 0;
         minImgHeight = options.minImgHeight || 0;
         maxImgWidth = min(options.maxImgWidth || 1<<24, options.imageWidth);
@@ -609,7 +609,7 @@ $.imgAreaSelect = function (img, options) {
             sx2 = round(x2 * scaleX);
 
         if (abs(sx2 - sx1) < minImgWidth) {
-            /* Scaled selection width is smaller than minImgWidth */
+            /* Selected width in image is smaller than minImgWidth */
             x2 = x1 - round(minImgWidth / scaleX) * (sx2 < sx1 || -1);
 
             if (x2 < left)
@@ -622,7 +622,7 @@ $.imgAreaSelect = function (img, options) {
             sy2 = round(y2 * scaleY);
 
         if (abs(sy2 - sy1) < minImgHeight) {
-            /* Scaled selection height is smaller than minImgHeight */
+            /* Selected height in image is smaller than minImgHeight */
             y2 = y1 - round(minImgHeight / scaleY) * (sy2 < sy1 || -1);
 
             if (y2 < top)
@@ -652,7 +652,7 @@ $.imgAreaSelect = function (img, options) {
         sx2 = round(x2 * scaleX);
 
         if (abs(sx2 - sx1) > maxImgWidth) {
-            /* Scaled selection width is greater than maxImgWidth */
+            /* Selected width in image is greater than maxImgWidth */
             x2 = x1 - round(maxImgWidth / scaleX) * (x2 < x1 || -1);
             fixAspectRatio();
         }
@@ -661,7 +661,7 @@ $.imgAreaSelect = function (img, options) {
         sy2 = round(y2 * scaleY);
 
         if (abs(sy2 - sy1) > maxImgHeight) {
-            /* Scaled selection height is greater than maxImgHeight */
+            /* Selected height in image is greater than maxImgHeight */
             y2 = y1 - round(maxImgHeight / scaleY) * (y2 < y1 || -1);
             fixAspectRatio(true);
         }
